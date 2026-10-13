@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import { Property, IProperty } from '../models/Property';
 import { AuthRequest } from '../middleware/auth';
+import { fallbackProperties } from '../utils/sampleData';
+
+// In-memory properties store when database is running in mock/demo mode
+let memoryProperties = [...fallbackProperties];
 
 export const getProperties = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -20,6 +25,63 @@ export const getProperties = async (req: Request, res: Response): Promise<void> 
       page = 1,
       limit = 12,
     } = req.query;
+
+    // Fallback when MongoDB is not connected
+    if (mongoose.connection.readyState !== 1) {
+      let results = [...memoryProperties];
+
+      if (listingType && listingType !== 'all') {
+        results = results.filter((p) => p.listingType === listingType);
+      }
+      if (city && city !== 'all') {
+        results = results.filter((p) => p.location.city.toLowerCase().includes(String(city).toLowerCase()));
+      }
+      if (locality) {
+        results = results.filter((p) => p.location.locality.toLowerCase().includes(String(locality).toLowerCase()));
+      }
+      if (propertyType && propertyType !== 'all') {
+        results = results.filter((p) => p.propertyType === propertyType);
+      }
+      if (minPrice) {
+        results = results.filter((p) => p.price >= Number(minPrice));
+      }
+      if (maxPrice) {
+        results = results.filter((p) => p.price <= Number(maxPrice));
+      }
+      if (bedrooms && bedrooms !== 'all') {
+        const bhk = Number(bedrooms);
+        results = results.filter((p) => (bhk >= 4 ? p.features.bedrooms >= 4 : p.features.bedrooms === bhk));
+      }
+      if (furnishing && furnishing !== 'all') {
+        results = results.filter((p) => p.features.furnishing === furnishing);
+      }
+      if (possessionStatus && possessionStatus !== 'all') {
+        results = results.filter((p) => p.features.possessionStatus === possessionStatus);
+      }
+      if (keyword) {
+        const kw = String(keyword).toLowerCase();
+        results = results.filter((p) =>
+          p.title.toLowerCase().includes(kw) ||
+          p.description.toLowerCase().includes(kw) ||
+          p.location.locality.toLowerCase().includes(kw) ||
+          p.location.city.toLowerCase().includes(kw)
+        );
+      }
+
+      if (sort === 'price_asc') results.sort((a, b) => a.price - b.price);
+      else if (sort === 'price_desc') results.sort((a, b) => b.price - a.price);
+      else if (sort === 'popularity') results.sort((a, b) => b.viewsCount - a.viewsCount);
+
+      res.status(200).json({
+        success: true,
+        count: results.length,
+        total: results.length,
+        totalPages: 1,
+        currentPage: 1,
+        properties: results,
+      });
+      return;
+    }
 
     const query: any = { status: 'active' };
 
@@ -120,6 +182,12 @@ export const getProperties = async (req: Request, res: Response): Promise<void> 
 
 export const getFeaturedProperties = async (_req: Request, res: Response): Promise<void> => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      const featured = memoryProperties.filter((p) => p.featured);
+      res.status(200).json({ success: true, properties: featured });
+      return;
+    }
+
     const featured = await Property.find({ featured: true, status: 'active' })
       .limit(8)
       .populate('owner', 'name phone email');
@@ -132,6 +200,17 @@ export const getFeaturedProperties = async (_req: Request, res: Response): Promi
 
 export const getPropertyById = async (req: Request, res: Response): Promise<void> => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      const property = memoryProperties.find((p) => p._id === req.params.id) || memoryProperties[0];
+      if (!property) {
+        res.status(404).json({ success: false, message: 'Property not found' });
+        return;
+      }
+      const similar = memoryProperties.filter((p) => p._id !== property._id).slice(0, 3);
+      res.status(200).json({ success: true, property, similar });
+      return;
+    }
+
     const property = await Property.findByIdAndUpdate(
       req.params.id,
       { $inc: { viewsCount: 1 } },

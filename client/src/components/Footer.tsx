@@ -40,6 +40,19 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
+        {/* Brand Identity Block */}
+        <div className="pt-10 pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center space-x-3 bg-white px-3.5 py-2 rounded-xl shadow-sm">
+            <img src="/ramlogics-logo.png" alt="Ramlogics" className="h-7 w-auto object-contain" />
+            <span className="text-xs font-black uppercase tracking-wider text-brand-800 bg-brand-100 px-2 py-0.5 rounded border border-brand-200">
+              Realty
+            </span>
+          </div>
+          <p className="text-xs text-gray-400 max-w-md">
+            Ramlogics Realty is India's next-generation property marketplace connecting home buyers, tenants, owners and agents with zero brokerage and verified listings.
+          </p>
+        </div>
+
         {/* Links Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-12">
           <div>

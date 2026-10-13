@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Building2, Heart, User as UserIcon, PlusCircle, MapPin, ChevronDown, LogOut } from 'lucide-react';
+import { Heart, User as UserIcon, PlusCircle, MapPin, ChevronDown, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
@@ -31,15 +31,17 @@ export const Navbar: React.FC<NavbarProps> = ({ selectedCity = 'Mumbai', onCityC
           {/* Logo & City Selector */}
           <div className="flex items-center space-x-6">
             <Link to="/" className="flex items-center space-x-2.5">
-              <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-brand-500/20">
-                <Building2 className="w-6 h-6" />
-              </div>
-              <div>
-                <span className="text-xl font-extrabold tracking-tight text-gray-900 block leading-tight">
-                  Ramlogics<span className="text-brand-600">Realty</span>
+              <img
+                src="/ramlogics-logo.png"
+                alt="Ramlogics"
+                className="h-8 w-auto object-contain"
+              />
+              <div className="flex flex-col">
+                <span className="text-[11px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-100 text-brand-800 border border-brand-200 leading-none w-fit">
+                  Realty
                 </span>
-                <span className="text-[10px] text-gray-400 font-semibold tracking-wider uppercase block">
-                  India's Real Estate Hub
+                <span className="text-[9px] text-gray-400 font-semibold tracking-wider uppercase mt-0.5">
+                  Real Estate Hub
                 </span>
               </div>
             </Link>
@@ -107,11 +109,11 @@ export const Navbar: React.FC<NavbarProps> = ({ selectedCity = 'Mumbai', onCityC
             {/* Post Property Free Button */}
             <Link
               to="/post-property"
-              className="hidden sm:inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-emerald-500/20 hover:from-emerald-700 hover:to-teal-700 transition"
+              className="hidden sm:inline-flex items-center space-x-2 bg-gradient-to-r from-brand-600 to-brand-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-brand-500/20 hover:from-brand-700 hover:to-brand-600 transition"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Post Property</span>
-              <span className="bg-emerald-400/40 text-[10px] tracking-wide uppercase px-1.5 py-0.5 rounded font-black">
+              <span className="bg-black/20 text-[10px] tracking-wide uppercase px-1.5 py-0.5 rounded font-black">
                 FREE
               </span>
             </Link>

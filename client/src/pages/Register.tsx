@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Building2, Mail, Lock, User as UserIcon, Phone, UserCheck } from 'lucide-react';
+import { Mail, Lock, User as UserIcon, Phone, UserCheck } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -51,9 +51,12 @@ export const Register: React.FC = () => {
       <div className="max-w-md w-full bg-white rounded-3xl p-8 sm:p-10 border border-gray-200 shadow-xl space-y-6">
         
         <div className="text-center">
-          <div className="w-12 h-12 bg-brand-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-brand-500/20">
-            <Building2 className="w-6 h-6" />
-          </div>
+          <Link to="/" className="inline-flex items-center space-x-2 mb-4">
+            <img src="/ramlogics-logo.png" alt="Ramlogics" className="h-9 w-auto object-contain mx-auto" />
+            <span className="text-[11px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand-100 text-brand-800 border border-brand-200">
+              Realty
+            </span>
+          </Link>
           <h2 className="text-2xl font-black text-gray-900 tracking-tight">
             Create an Account
           </h2>

@@ -50,22 +50,22 @@ export const Home: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       
       {/* 1. Hero Section */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-brand-950 to-slate-900 text-white pt-20 pb-32 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-slate-950 via-brand-950 to-slate-900 text-white pt-20 pb-32 overflow-hidden">
         
         {/* Background glow & subtle patterns */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.18),transparent_50%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(132,189,47,0.22),transparent_50%)] pointer-events-none" />
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           
           <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/15 text-xs font-bold text-brand-300 mb-6 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <Sparkles className="w-3.5 h-3.5 text-brand-400" />
             <span>India's Most Trusted Real Estate Marketplace</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight max-w-4xl mx-auto leading-tight">
             Find Your Dream Space in <br className="hidden sm:inline" />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-sky-300 to-teal-300">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#d9f99d] via-[#a3e635] to-[#84bd2f]">
               India's Top Cities
             </span>
           </h1>
@@ -77,15 +77,15 @@ export const Home: React.FC = () => {
           {/* Key Metrics Strip */}
           <div className="flex flex-wrap items-center justify-center gap-8 mt-8 text-sm font-semibold text-slate-300">
             <div className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <CheckCircle className="w-4 h-4 text-brand-400" />
               <span>100% Verified Properties</span>
             </div>
             <div className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <CheckCircle className="w-4 h-4 text-brand-400" />
               <span>Zero Brokerage Options</span>
             </div>
             <div className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <CheckCircle className="w-4 h-4 text-brand-400" />
               <span>Direct Owner & Builder Deals</span>
             </div>
           </div>
@@ -148,7 +148,7 @@ export const Home: React.FC = () => {
             to="/properties?listingType=commercial"
             className="group p-5 bg-white rounded-2xl border border-gray-200 hover:border-brand-500 shadow-sm hover:shadow-xl transition flex flex-col items-center text-center"
           >
-            <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+            <div className="w-14 h-14 rounded-2xl bg-brand-50 text-brand-700 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white transition-all">
               <Briefcase className="w-7 h-7" />
             </div>
             <h3 className="font-bold text-gray-900 text-sm">Commercial</h3>

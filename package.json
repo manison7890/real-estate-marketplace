@@ -1,0 +1,33 @@
+{
+  "name": "real-estate-marketplace",
+  "version": "1.0.0",
+  "description": "Full-stack MERN Real Estate Marketplace inspired by 99acres and MagicBricks",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:server": "npm --prefix server run build",
+    "build:client": "npm --prefix client run build",
+    "build": "npm run build:server && npm run build:client",
+    "seed": "npm --prefix server run seed",
+    "start": "node server/dist/index.js",
+    "install-all": "npm install && npm --prefix server install && npm --prefix client install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "mern",
+    "real-estate",
+    "marketplace",
+    "99acres",
+    "magicbricks",
+    "react",
+    "express",
+    "mongodb",
+    "typescript"
+  ],
+  "author": "Ramlogics",
+  "license": "ISC"
+}

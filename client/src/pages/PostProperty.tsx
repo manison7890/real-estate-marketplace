@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Building2, 
@@ -69,6 +69,14 @@ export const PostProperty: React.FC = () => {
   const [contactName, setContactName] = useState(user?.name || '');
   const [contactPhone, setContactPhone] = useState(user?.phone || '');
   const [contactEmail, setContactEmail] = useState(user?.email || '');
+
+  useEffect(() => {
+    if (user) {
+      if (!contactName && user.name) setContactName(user.name);
+      if (!contactPhone && user.phone) setContactPhone(user.phone);
+      if (!contactEmail && user.email) setContactEmail(user.email);
+    }
+  }, [user]);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);

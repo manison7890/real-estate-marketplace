@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import { User, IUser } from '../models/User';
+import { memoryUsers } from '../utils/memoryStore';
 
 export interface AuthRequest extends Request {
-  user?: IUser;
+  user?: IUser | any;
 }
 
 export const protect = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
@@ -20,6 +22,18 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as { id: string };
+
+    if (mongoose.connection.readyState !== 1) {
+      const memUser = memoryUsers.find((u) => u._id === decoded.id) || memoryUsers[0];
+      if (!memUser) {
+        res.status(401).json({ success: false, message: 'User not found' });
+        return;
+      }
+      req.user = memUser;
+      next();
+      return;
+    }
+
     const user = await User.findById(decoded.id);
 
     if (!user) {

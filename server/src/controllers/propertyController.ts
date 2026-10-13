@@ -2,10 +2,7 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { Property, IProperty } from '../models/Property';
 import { AuthRequest } from '../middleware/auth';
-import { fallbackProperties } from '../utils/sampleData';
-
-// In-memory properties store when database is running in mock/demo mode
-let memoryProperties = [...fallbackProperties];
+import { memoryProperties } from '../utils/memoryStore';
 
 export const getProperties = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -251,6 +248,22 @@ export const createProperty = async (req: AuthRequest, res: Response): Promise<v
       contactEmail: req.body.contactEmail || req.user.email,
     };
 
+    if (mongoose.connection.readyState !== 1) {
+      const newProp = {
+        ...propertyData,
+        _id: 'prop_' + Date.now(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      memoryProperties.unshift(newProp);
+      res.status(201).json({
+        success: true,
+        message: 'Property listed successfully!',
+        property: newProp,
+      });
+      return;
+    }
+
     const property = await Property.create(propertyData);
 
     res.status(201).json({
@@ -265,6 +278,27 @@ export const createProperty = async (req: AuthRequest, res: Response): Promise<v
 
 export const updateProperty = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      const idx = memoryProperties.findIndex((p: any) => p._id === req.params.id);
+      if (idx === -1) {
+        res.status(404).json({ success: false, message: 'Property not found' });
+        return;
+      }
+      const existing = memoryProperties[idx];
+      const ownerId = (existing as any).owner?._id || (existing as any).owner;
+      if (String(ownerId) !== String(req.user?._id) && req.user?.role !== 'admin') {
+        res.status(403).json({ success: false, message: 'Not authorized to edit this property' });
+        return;
+      }
+      memoryProperties[idx] = { ...existing, ...req.body, updatedAt: new Date().toISOString() };
+      res.status(200).json({
+        success: true,
+        message: 'Property updated successfully',
+        property: memoryProperties[idx],
+      });
+      return;
+    }
+
     let property = await Property.findById(req.params.id);
 
     if (!property) {
@@ -295,6 +329,23 @@ export const updateProperty = async (req: AuthRequest, res: Response): Promise<v
 
 export const deleteProperty = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      const idx = memoryProperties.findIndex((p: any) => p._id === req.params.id);
+      if (idx === -1) {
+        res.status(404).json({ success: false, message: 'Property not found' });
+        return;
+      }
+      const existing = memoryProperties[idx];
+      const ownerId = (existing as any).owner?._id || (existing as any).owner;
+      if (String(ownerId) !== String(req.user?._id) && req.user?.role !== 'admin') {
+        res.status(403).json({ success: false, message: 'Not authorized to delete this property' });
+        return;
+      }
+      memoryProperties.splice(idx, 1);
+      res.status(200).json({ success: true, message: 'Property removed successfully' });
+      return;
+    }
+
     const property = await Property.findById(req.params.id);
 
     if (!property) {
@@ -317,6 +368,16 @@ export const deleteProperty = async (req: AuthRequest, res: Response): Promise<v
 
 export const getMyProperties = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      const userId = String(req.user?._id);
+      const props = memoryProperties.filter((p: any) => {
+        const ownerId = p.owner?._id || p.owner;
+        return String(ownerId) === userId;
+      });
+      res.status(200).json({ success: true, count: props.length, properties: props });
+      return;
+    }
+
     const properties = await Property.find({ owner: req.user?._id }).sort({ createdAt: -1 });
     res.status(200).json({ success: true, count: properties.length, properties });
   } catch (error) {

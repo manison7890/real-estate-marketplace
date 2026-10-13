@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import { User } from '../models/User';
 import { AuthRequest } from '../middleware/auth';
+import { memoryUsers } from '../utils/memoryStore';
 
 const generateToken = (id: string): string => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'secret', {
@@ -15,6 +17,41 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     if (!name || !email || !password || !phone) {
       res.status(400).json({ success: false, message: 'Please provide all required fields' });
+      return;
+    }
+
+    if (mongoose.connection.readyState !== 1) {
+      const existing = memoryUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+      if (existing) {
+        res.status(400).json({ success: false, message: 'Email is already registered' });
+        return;
+      }
+
+      const newUser = {
+        _id: 'user-' + Date.now(),
+        name,
+        email,
+        password,
+        phone,
+        role: role || 'buyer',
+        savedProperties: [],
+        createdAt: new Date().toISOString(),
+      };
+      memoryUsers.push(newUser);
+
+      const token = generateToken(newUser._id);
+      res.status(201).json({
+        success: true,
+        token,
+        user: {
+          id: newUser._id,
+          name: newUser.name,
+          email: newUser.email,
+          phone: newUser.phone,
+          role: newUser.role,
+          savedProperties: newUser.savedProperties,
+        },
+      });
       return;
     }
 
@@ -60,6 +97,29 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    if (mongoose.connection.readyState !== 1) {
+      const user = memoryUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+      if (!user || user.password !== password) {
+        res.status(401).json({ success: false, message: 'Invalid credentials' });
+        return;
+      }
+
+      const token = generateToken(user._id);
+      res.status(200).json({
+        success: true,
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          savedProperties: user.savedProperties,
+        },
+      });
+      return;
+    }
+
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -93,6 +153,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
 export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      res.status(200).json({ success: true, user: req.user });
+      return;
+    }
+
     const user = await User.findById(req.user?._id).populate('savedProperties');
     res.status(200).json({ success: true, user });
   } catch (error) {
@@ -103,6 +168,33 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
 export const toggleSaveProperty = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { propertyId } = req.params;
+
+    if (mongoose.connection.readyState !== 1) {
+      const user = memoryUsers.find((u) => u._id === req.user?._id);
+      if (!user) {
+        res.status(404).json({ success: false, message: 'User not found' });
+        return;
+      }
+
+      const idx = user.savedProperties.indexOf(propertyId);
+      let isSaved = false;
+      if (idx > -1) {
+        user.savedProperties.splice(idx, 1);
+        isSaved = false;
+      } else {
+        user.savedProperties.push(propertyId);
+        isSaved = true;
+      }
+
+      res.status(200).json({
+        success: true,
+        isSaved,
+        savedProperties: user.savedProperties,
+        message: isSaved ? 'Property saved to wishlist' : 'Property removed from wishlist',
+      });
+      return;
+    }
+
     const user = await User.findById(req.user?._id);
 
     if (!user) {

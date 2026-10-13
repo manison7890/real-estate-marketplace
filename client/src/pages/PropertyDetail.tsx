@@ -26,7 +26,7 @@ import { useAuth } from '../context/AuthContext';
 
 export const PropertyDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { toggleWishlist, isWishlisted } = useAuth();
+  const { user, toggleWishlist, isWishlisted } = useAuth();
   const [property, setProperty] = useState<Property | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
   const [activePhotoIndex, setActivePhotoIndex] = useState<number>(0);
@@ -39,6 +39,14 @@ export const PropertyDetail: React.FC = () => {
   const [contactPhone, setContactPhone] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [contactMsg, setContactMsg] = useState('I am interested in this property. Please contact me.');
+
+  useEffect(() => {
+    if (user) {
+      if (user.name) setContactName(user.name);
+      if (user.phone) setContactPhone(user.phone);
+      if (user.email) setContactEmail(user.email);
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchProperty = async () => {

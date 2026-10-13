@@ -66,8 +66,15 @@ export const Dashboard: React.FC = () => {
 
       // Fetch Saved wishlist items
       const savedIds = user?.savedProperties || JSON.parse(localStorage.getItem('guest_wishlist') || '[]');
-      const saved = mockProperties.filter((p) => savedIds.includes(p._id));
-      setWishlistProperties(saved);
+      try {
+        const allRes = await api.get('/properties?limit=50');
+        const catalog = allRes.data?.properties || mockProperties;
+        const saved = catalog.filter((p: Property) => savedIds.includes(p._id));
+        setWishlistProperties(saved);
+      } catch {
+        const saved = mockProperties.filter((p) => savedIds.includes(p._id));
+        setWishlistProperties(saved);
+      }
 
       setLoading(false);
     };
@@ -88,7 +95,7 @@ export const Dashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
       </div>
     );
   }

@@ -83,6 +83,7 @@ export const Footer: React.FC = () => {
               <li><Link to="/post-property" className="hover:text-white transition">Post Property Free</Link></li>
               <li><Link to="/properties?listingType=rent" className="hover:text-white transition">Rental Homes</Link></li>
               <li><Link to="/dashboard" className="hover:text-white transition">Owner Dashboard</Link></li>
+              <li><Link to="/admin" className="hover:text-brand-400 font-bold transition flex items-center space-x-1"><span>Admin Control Panel</span></Link></li>
               <li><Link to="/login" className="hover:text-white transition">Agent Login</Link></li>
             </ul>
           </div>

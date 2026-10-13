@@ -186,6 +186,27 @@ real-estate-marketplace/
 
 ---
 
+## 🛡️ Admin Panel & Credentials
+
+The application includes an **Admin Control Panel** for supervising all marketplace activities:
+- **Admin URL**: [http://localhost:5173/admin](http://localhost:5173/admin)
+- **Direct Login URL**: [http://localhost:5173/login](http://localhost:5173/login)
+
+### Default Admin Credentials:
+| Field | Value |
+|-------|-------|
+| **Email** | `admin@ramlogics.com` |
+| **Password** | `Password@123` |
+| **Role** | `admin` (Super Admin) |
+
+### Admin Capabilities:
+1. **Platform Metrics**: Total properties, active leads, registered users, and total property view impressions.
+2. **Property Moderation**: One-click RERA verification toggle, featured listing toggle, and listing removal.
+3. **Lead Management**: View all incoming buyer/tenant inquiries with direct call/email action buttons.
+4. **User Oversight**: View registered buyers, owners, and agents with their contact information.
+
+---
+
 ## 🔒 API Endpoints Overview
 
 | Method | Endpoint | Description | Auth Required |
